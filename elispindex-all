@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# This sucks for now because it needs to be run in a particular place
+# and because it has no abstraction over where the things are stored.
+
+# Doing it in elisp would be preferred.
+
+find . -type f -name "*.el" ! -path "*/.git/*" ! -path "*/.*" \
+    | ~/emacs/bin/etags -o ~/.emacs.d/.elisptags -
+
+# End
