@@ -158,7 +158,9 @@ Puts itself in the after-save hook and so forth."
                   ))))))))))
 
 (defun elispindex/make-text-link (link-to filename-or-buffer)
-  "Make a hypertext link target LINK-TO in FILENAME-OR-BUFFER."
+  "Make a hypertext link target LINK-TO in FILENAME-OR-BUFFER.
+
+Returns the correctly propertized string."
   (let* ((index-fname (if (bufferp filename-or-buffer)
                           (buffer-file-name filename-or-buffer)
                           filename-or-buffer))

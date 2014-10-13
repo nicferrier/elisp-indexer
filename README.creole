@@ -27,7 +27,7 @@ something that worked.
 
 Some of it was basically refactoring and seemed useful anyway. For
 example, splitting off {{{elispindex/what-is-this-function}}} seemed
-worthwhile. It's just possible that other people might want that.
+worthwhile. And {{{elispindex/make-text-link}}}.
 
 == How to use ==
 
