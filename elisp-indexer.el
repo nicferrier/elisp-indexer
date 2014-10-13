@@ -38,6 +38,8 @@
 
 ;;; Code:
 
+(require 'cl)
+
 (defmacro cond-re (expression &rest clauses)
   "Evaluate EXPRESSION and then match regex CLAUSES against it.
 
