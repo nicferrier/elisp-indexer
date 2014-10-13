@@ -28,3 +28,16 @@ something that worked.
 Some of it was basically refactoring and seemed useful anyway. For
 example, splitting off {{{elispindex/what-is-this-function}}} seemed
 worthwhile. It's just possible that other people might want that.
+
+== How to use ==
+
+For now it's a bit of a mess:
+
+* pull the code
+* eval it
+* use elispindex-do-init to install an after save hook for elisp
+* use elispindex/describe-function as a replacement for C-h f
+
+I haven't patched in {{{elispindex/describe-function}}} as a proper
+replacement for {{{describe-function}}} yet because I'm not sure it
+is.
