@@ -1,0 +1,30 @@
+= Improving the Emacs help system =
+
+When developing packages of EmacsLisp one often has the package
+installed.  If you use the Emacs help system to find functions or
+variables this will mostly take you to the packaged version. Often,
+this is not what you want. Once I spent a whole day tracing a bug
+because I had edited the packaged version of a function instead of
+the source controlled version.
+
+When you look up a function or variable Emacs should know that you
+have a source controlled version of the same code and it should be
+able to show you links to that. That's what this code does.
+
+An etags based indexer is used, after every elisp file is saved the
+index is updated. There is also a shell script to batch create (or
+recreate) the entire index. Whenever a function is looked up in
+help the results are emended with anything discovered in the index.
+
+
+I had to completly rewrite the help for now. I say completly. But what
+I mean is //pinch the code from the help system and then re-arrange it
+slightly//.
+
+It seems like it's at best unreliable to edit {{{*Help*}}} buffers
+after they've been made. So rewriting was the quickest way to get
+something that worked.
+
+Some of it was basically refactoring and seemed useful anyway. For
+example, splitting off {{{elispindex/what-is-this-function}}} seemed
+worthwhile. It's just possible that other people might want that.
