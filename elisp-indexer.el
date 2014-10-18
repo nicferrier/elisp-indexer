@@ -258,26 +258,28 @@ hooks to alter the documentation."
          (file-name (find-lisp-object-file-name symbol symbol-fn))
          (doc (help-split-fundoc (elispindex/fundoc symbol) symbol)))
     (with-current-buffer (get-buffer-create "*Doc*")
-      (erase-buffer)
-      (insert
-       (concat
-        (symbol-name symbol)
-        " is "
-        (elispindex/what-is-this-function symbol)
-        (format 
-         " in `%s'"
-         (elispindex/make-text-link symbol file-name))
-        (if (bufferp indexed)
-            (format
-             " indexed in `%s'"
-             (elispindex/make-text-link symbol indexed))
-            "")
-        "\n"))
-      (insert "\n" (car doc) "\n\n" (cdr doc) "\n")
-      (save-excursion
-        (when (re-search-backward "`\\([^`']+\\)'" nil t)
-          (help-xref-button 1 'help-function-def function file-name)))
+      (let ((buffer-read-only nil))
+        (erase-buffer)
+        (insert
+         (concat
+          (symbol-name symbol)
+          " is "
+          (elispindex/what-is-this-function symbol)
+          (format 
+           " in `%s'"
+           (elispindex/make-text-link symbol file-name))
+          (if (bufferp indexed)
+              (format
+               " indexed in `%s'"
+               (elispindex/make-text-link symbol indexed))
+              "")
+          "\n"))
+        (insert "\n" (car doc) "\n\n" (cdr doc) "\n")
+        (save-excursion
+          (when (re-search-backward "`\\([^`']+\\)'" nil t)
+            (help-xref-button 1 'help-function-def function file-name))))
       (help-mode)
+      (goto-char (point-min))
       (switch-to-buffer (current-buffer)))))
 
 
