@@ -274,7 +274,7 @@ This is done so we can pass anything to `help-split-fundoc'."
                 (symbol-name it)
                 (help-function-arglist sym t))))))))
 
-(defun elispindex/describe-function (symbol)
+(defun elispindex-describe-function (symbol)
   "An alternative `describe-function' with index info.
 
 Current *Help* buffers can't be post edited and there aren't any
