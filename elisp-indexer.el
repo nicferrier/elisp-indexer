@@ -4,7 +4,7 @@
 
 ;; Author: Nic Ferrier <nferrier@ferrier.me.uk>
 ;; Keywords: lisp
-;; Version: 0.0.2
+;; Version: 0.0.3
 ;; Package-depends: ((dash "2.9.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@
 
 ;;; Code:
 
-(require 'cl)
+(require 'cl-lib)
 (require 'dash)
 (require 'rx)
 
@@ -93,7 +93,7 @@ simply returns what it was passed as a list."
                            (cond-re status
                              ("finished\n" 0)
                              ("exited abnormally with code \\([0-9]+\\)\n"
-                              (string-to-int (match-string 1 status))))
+                              (string-to-number (match-string 1 status))))
                            (split-string
                             (with-current-buffer (process-buffer p)
                               (buffer-string)) "\n")))))
@@ -112,7 +112,7 @@ Return the buffer to the source file."
           (file-name-directory user-init-file))))
     (condition-case err
         (find-tag-noselect (symbol-name symbol-name))
-      (user-error nil))))
+      (user-error (prog1 nil err)))))
 
 (defun elispindex/do-file (filename)
   "Index FILENAME in the Emacs-Lisp tags."
@@ -135,33 +135,6 @@ Puts itself in the after-save hook and so forth."
   (interactive)
   (add-hook 'after-save-hook 'elispindex/after-save))
 
-
-(defun elispindex/help-hack ()
-  ;; Hack help buffers to add index info
-  ;;
-  ;; this doesn't work, it doesn't seem possible to hack help buffers.
-  (progn 
-    (describe-function 'elnode-docroot-for)
-    (with-selected-window (get-buffer-window (get-buffer "*Help*"))
-      (with-current-buffer (get-buffer "*Help*")
-        (save-excursion
-          (goto-char (point-min))
-          (let* ((func-sym
-                  (save-match-data
-                    (when (re-search-forward "^\\([^ ]+\\) " nil t)
-                      (intern (match-string 1)))))
-                 (indexed (elispindex/find func-sym)))
-            (when indexed
-              (message "hacking help!")
-              (let ((buffer-read-only nil))
-                (goto-char (point-max))
-                (insert "\nIndexed at ")
-                (let ((start (point))
-                      (file (file-name-base (buffer-file-name indexed))))
-                  (insert (buffer-file-name indexed))
-                  (let ((end (point)))
-                    ;;(make-text-button start end)
-                  ))))))))))
 
 (defun elispindex/make-text-link (link-to filename-or-buffer)
   "Make a hypertext link target LINK-TO in FILENAME-OR-BUFFER.
