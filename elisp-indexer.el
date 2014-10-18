@@ -4,7 +4,7 @@
 
 ;; Author: Nic Ferrier <nferrier@ferrier.me.uk>
 ;; Keywords: lisp
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Package-depends: ((dash "2.9.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -304,6 +304,7 @@ hooks to alter the documentation."
       (save-excursion
         (when (re-search-backward "`\\([^`']+\\)'" nil t)
           (help-xref-button 1 'help-function-def function file-name)))
+      (help-mode)
       (switch-to-buffer (current-buffer)))))
 
 
