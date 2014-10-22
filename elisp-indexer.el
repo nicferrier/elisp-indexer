@@ -4,7 +4,7 @@
 
 ;; Author: Nic Ferrier <nferrier@ferrier.me.uk>
 ;; Keywords: lisp
-;; Version: 0.0.4
+;; Version: 0.0.6
 ;; Package-depends: ((dash "2.9.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -102,6 +102,29 @@ simply returns what it was passed as a list."
         (accept-process-output proc 0 (or millis 100)))
       res)))
 
+
+(defgroup elisp-index nil
+  "EmacsLisp indexing tool.")
+
+(defcustom elisp-index-interesting-dirs nil
+  "List of directories `elisp-index' will index.
+
+If nil then any file saved in `emacs-lisp-mode' is indexed.  If
+it's set to a list of directories then any `emacs-lisp-mode' file
+is checked to test whether it is under one of these directories
+before indexing."
+  :group 'elisp-index
+  :type '(repeat directory))
+
+(defcustom elisp-index-replace-help nil
+  "Should `elisp-index-describe-function' replace help?
+
+`elisp-index-describe-function' behaves exactly like
+`describe-function' but decorates the help with the index
+information."
+  :group 'elisp-index
+  :type 'boolean)
+
 (defun elispindex/find (symbol-name)
   "Find SYMBOL-NAME in the Emacs-Lisp tags.
 
@@ -121,20 +144,22 @@ Return the buffer to the source file."
     "~/emacs/bin/etags -a -o ~/.emacs.d/.elisptags %s"
     filename)))
 
-(defun elispindex/after-save ()
+;;;###autoload
+(defun elispindex-after-save ()
   "Index the current buffer, if it's an Elisp file."
   (let ((filename (buffer-file-name)))
-    (when (string-match-p ".*\\.el$" filename)
+    (when (and (stringp filename) (equal major-mode 'emacs-lisp-mode))
+      (message "elispindex/after-save hook function!!!")
       (elispindex/do-file filename))))
 
+(defalias 'elispindex/after-save 'elispindex-after-save)
 
 (defun elispindex-do-init ()
   "Initialize elispindex.
 
 Puts itself in the after-save hook and so forth."
   (interactive)
-  (add-hook 'after-save-hook 'elispindex/after-save))
-
+  (add-hook 'after-save-hook 'elispindex-after-save))
 
 (defun elispindex/make-text-link (link-to filename-or-buffer)
   "Make a hypertext link target LINK-TO in FILENAME-OR-BUFFER.
@@ -247,6 +272,7 @@ This is done so we can pass anything to `help-split-fundoc'."
                 (symbol-name it)
                 (help-function-arglist sym t))))))))
 
+;;;###autoload
 (defun elispindex-describe-function (symbol)
   "An alternative `describe-function' with index info.
 
@@ -282,6 +308,9 @@ hooks to alter the documentation."
       (goto-char (point-min))
       (switch-to-buffer (current-buffer)))))
 
+(eval-after-load 'elisp-indexer
+  '(when elisp-index-replace-help 
+    (global-set-key (kbd "C-h f") 'elispindex-describe-function)))
 
 (provide 'elisp-indexer)
 
