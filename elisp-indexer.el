@@ -4,7 +4,7 @@
 
 ;; Author: Nic Ferrier <nferrier@ferrier.me.uk>
 ;; Keywords: lisp
-;; Version: 0.0.7
+;; Version: 0.0.8
 ;; Package-depends: ((dash "2.9.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
