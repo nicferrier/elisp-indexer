@@ -4,7 +4,7 @@
 
 ;; Author: Nic Ferrier <nferrier@ferrier.me.uk>
 ;; Keywords: lisp
-;; Version: 0.0.6
+;; Version: 0.0.7
 ;; Package-depends: ((dash "2.9.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -152,6 +152,7 @@ Return the buffer to the source file."
       (message "elispindex/after-save hook function!!!")
       (elispindex/do-file filename))))
 
+;;;###autoload
 (defalias 'elispindex/after-save 'elispindex-after-save)
 
 (defun elispindex-do-init ()
@@ -283,30 +284,32 @@ hooks to alter the documentation."
          (indexed (elispindex/find symbol))
          (file-name (find-lisp-object-file-name symbol symbol-fn))
          (doc (help-split-fundoc (elispindex/fundoc symbol) symbol)))
-    (with-current-buffer (get-buffer-create "*Doc*")
-      (let ((buffer-read-only nil))
-        (erase-buffer)
-        (insert
-         (concat
-          (symbol-name symbol)
-          " is "
-          (elispindex/what-is-this-function symbol)
-          (format 
-           " in `%s'"
-           (elispindex/make-text-link symbol file-name))
-          (if (bufferp indexed)
-              (format
-               " indexed in `%s'"
-               (elispindex/make-text-link symbol indexed))
-              "")
-          "\n"))
-        (insert "\n" (car doc) "\n\n" (cdr doc) "\n")
-        (save-excursion
-          (when (re-search-backward "`\\([^`']+\\)'" nil t)
-            (help-xref-button 1 'help-function-def function file-name))))
-      (help-mode)
-      (goto-char (point-min))
-      (switch-to-buffer (current-buffer)))))
+    (condition-case err
+        (with-current-buffer (get-buffer-create "*Doc*")
+          (let ((buffer-read-only nil))
+            (erase-buffer)
+            (insert
+             (concat
+              (symbol-name symbol)
+              " is "
+              (elispindex/what-is-this-function symbol)
+              (format 
+               " in `%s'"
+               (elispindex/make-text-link symbol file-name))
+              (if (bufferp indexed)
+                  (format
+                   " indexed in `%s'"
+                   (elispindex/make-text-link symbol indexed))
+                  "")
+              "\n"))
+            (insert "\n" (car doc) "\n\n" (cdr doc) "\n")
+            (save-excursion
+              (when (re-search-backward "`\\([^`']+\\)'" nil t)
+                (help-xref-button 1 'help-function-def function file-name))))
+          (help-mode)
+          (goto-char (point-min))
+          (switch-to-buffer (current-buffer)))
+      (error (describe-function symbol)))))
 
 (eval-after-load 'elisp-indexer
   '(when elisp-index-replace-help 
