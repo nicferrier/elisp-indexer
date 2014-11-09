@@ -226,6 +226,9 @@ Returns the correctly propertized string."
 ;; (elispindex/what-is-this-function 'if) ; => "a special form"
 ;; (elispindex/what-is-this-function 'symbol-function) ; => "a built in function"
 
+(defvar elispindex/lookup-function-history nil
+  "The history for `elispindex/lookup-function'.")
+
 (defun elispindex/lookup-function ()
   ;; This is ripped from the elisp in `describe-function'
   (let ((fn (function-called-at-point))
@@ -235,7 +238,8 @@ Returns the correctly propertized string."
                (if fn
                    (format "Describe function (default %s): " fn)
                    "Describe function: ")
-               obarray 'fboundp t nil nil
+               obarray 'fboundp t nil
+               'elispindex/lookup-function-history
                (and fn (symbol-name fn))))
     (list (if (equal val "")
               fn
