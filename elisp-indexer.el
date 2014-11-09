@@ -4,7 +4,7 @@
 
 ;; Author: Nic Ferrier <nferrier@ferrier.me.uk>
 ;; Keywords: lisp
-;; Version: 0.0.8
+;; Version: 0.0.9
 ;; Package-depends: ((dash "2.9.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -37,6 +37,14 @@
 ;; index is updated. There is also a shell script to batch create (or
 ;; recreate) the entire index. Whenever a function is looked up in
 ;; help the results are emended with anything discovered in the index.
+
+;; The etags file will be constantly re-read unless you add the tags
+;; file to `revert-without-query'.  My version of this is:
+;;
+;;   ("/.emacs.d/.elisptags")
+;;
+;; the variable `elisp-index/tags-file' defines the file name of the
+;; tags file.
 
 ;;; Code:
 
@@ -125,14 +133,16 @@ information."
   :group 'elisp-index
   :type 'boolean)
 
+(defconst elisp-index/tags-file
+  (expand-file-name ".elisptags"
+                    (file-name-directory user-init-file))
+  "The file name of the `elisp-index' tags file.")
+
 (defun elispindex/find (symbol-name)
   "Find SYMBOL-NAME in the Emacs-Lisp tags.
 
 Return the buffer to the source file."
-  (let ((tags-file-name
-         (expand-file-name
-          ".elisptags"
-          (file-name-directory user-init-file))))
+  (let ((tags-file-name elisp-index/tags-file))
     (condition-case err
         (find-tag-noselect (symbol-name symbol-name))
       (user-error (prog1 nil err)))))
