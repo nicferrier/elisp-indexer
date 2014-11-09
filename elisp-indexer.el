@@ -256,7 +256,7 @@ embedded, it has to be obtained separately with
 
 This function homogenizes both types of doc to the first kind.
 This is done so we can pass anything to `help-split-fundoc'."
-  (let ((doc (documentation sym)))
+  (let ((doc (or (documentation sym) "")))
     (if
      (string-match-p 
       (rx (and (* anything) "\n(fn" (1+ anything) ")" string-end))
