@@ -306,14 +306,16 @@ hooks to alter the documentation."
                    (elispindex/make-text-link symbol indexed))
                   "")
               "\n"))
-            (insert "\n" (car doc) "\n\n" (cdr doc) "\n")
+            (insert "\n" (car doc) "\n\n" (or (cdr doc) "") "\n")
             (save-excursion
               (when (re-search-backward "`\\([^`']+\\)'" nil t)
-                (help-xref-button 1 'help-function-def function file-name))))
+                (help-xref-button 1 'help-function-def 'function file-name))))
           (help-mode)
           (goto-char (point-min))
           (switch-to-buffer (current-buffer)))
-      (error (describe-function symbol)))))
+      (error
+       (prog1 (describe-function symbol)
+         (message "elispindex-describe-function error - %S" err))))))
 
 (eval-after-load 'elisp-indexer
   '(when elisp-index-replace-help 
