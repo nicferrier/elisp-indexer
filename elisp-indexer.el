@@ -159,7 +159,7 @@ Return the buffer to the source file."
   "Index the current buffer, if it's an Elisp file."
   (let ((filename (buffer-file-name)))
     (when (and (stringp filename) (equal major-mode 'emacs-lisp-mode))
-      (message "elispindex/after-save hook function!!!")
+      (message "elispindex indexed %s" filename)
       (elispindex/do-file filename))))
 
 ;;;###autoload
