@@ -4,7 +4,7 @@
 
 ;; Author: Nic Ferrier <nferrier@ferrier.me.uk>
 ;; Keywords: lisp
-;; Version: 0.0.9
+;; Version: 0.0.10
 ;; Package-depends: ((dash "2.9.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -159,7 +159,7 @@ Return the buffer to the source file."
   "Index the current buffer, if it's an Elisp file."
   (let ((filename (buffer-file-name)))
     (when (and (stringp filename) (equal major-mode 'emacs-lisp-mode))
-      (message "elispindex indexed %s" filename)
+      (message "elispindex/after-save hook function!!!")
       (elispindex/do-file filename))))
 
 ;;;###autoload
@@ -277,15 +277,16 @@ This is done so we can pass anything to `help-split-fundoc'."
       doc)
      doc
      ;; Else append the arg list correctly to the end of the doc
-     (format "%s\n\n%s"
-             doc
-             (cons
-              'fn
-              (--map
-               (if (equal (elt it 0) ?\&) it (upcase it))
-               (--map
-                (symbol-name it)
-                (help-function-arglist sym t))))))))
+     (let* ((arglist (help-function-arglist sym t)))
+       (format "%s\n\n%s"
+               doc
+               (cons
+                'fn
+                (if (stringp arglist)
+                    arglist
+                    (--map
+                     (if (equal (elt it 0) ?\&) it (upcase it))
+                     (--map (symbol-name it) arglist)))))))))
 
 ;;;###autoload
 (defun elispindex-describe-function (symbol)
